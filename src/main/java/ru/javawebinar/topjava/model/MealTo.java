@@ -19,10 +19,6 @@ public class MealTo {
         this.excess = excess;
     }
 
-    public static MealTo of(Meal meal, boolean excess) {
-        return new MealTo(meal.getDateTime(), meal.getDescription(), meal.getCalories(), excess);
-    }
-
     public LocalDateTime getDateTime() {
         return dateTime;
     }

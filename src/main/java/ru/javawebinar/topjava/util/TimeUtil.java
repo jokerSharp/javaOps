@@ -11,7 +11,7 @@ public class TimeUtil {
     }
 
     public static String convertDateTimeFormat(LocalDateTime dateTime) {
-        return dateTime.format(DateTimeFormatter.ofPattern("HH:mm dd-MM-yyyy"));
+        return dateTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
     }
 
 }

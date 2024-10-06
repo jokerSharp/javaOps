@@ -8,7 +8,7 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-public class MealToRepository {
+public class InMemoryMealRepository implements MealRepository {
 
     private List<Meal> meals;
 
@@ -31,16 +31,4 @@ public class MealToRepository {
     public void setMeals(List<Meal> meals) {
         this.meals = meals;
     }
-
-    private MealToRepository() {
-    }
-
-    private static class MealToRepositoryHolder {
-        public static final MealToRepository HOLDER_INSTANCE = new MealToRepository();
-    }
-
-    public static MealToRepository getInstance() {
-        return MealToRepositoryHolder.HOLDER_INSTANCE;
-    }
-
 }

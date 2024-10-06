@@ -20,14 +20,11 @@
         <th>Calories</th>
     </tr>
     <c:forEach items="${meals}" var="meal">
-        <c:set value="green" var="color"></c:set>
-        <c:if test="${meal.excess}">
-            <c:set value="red" var="color"></c:set>
-        </c:if>
+        <c:set var="color" value="${meal.excess ? 'red' : 'green'}"/>
         <tr style="color: ${color}">
-            <td><c:out value="${fn:convertDateTimeFormat(meal.dateTime)}"/></td>
-            <td><c:out value="${meal.description}"/></td>
-            <td><c:out value="${meal.calories}"/></td>
+            <td>${fn:convertDateTimeFormat(meal.dateTime)}</td>
+            <td>${meal.description}</td>
+            <td>${meal.calories}</td>
         </tr>
     </c:forEach>
 </table>
