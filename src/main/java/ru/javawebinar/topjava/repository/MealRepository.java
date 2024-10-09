@@ -6,9 +6,9 @@ import java.util.List;
 
 public interface MealRepository {
 
-    void addMeal(Meal meal);
-    List<Meal> getMeals();
-    Meal getMealById(int id);
-    void updateMeal(Meal meal);
-    void deleteMeal(Meal meal);
+    Meal add(Meal meal);
+    List<Meal> getAll();
+    Meal getById(int id);
+    Meal update(Meal meal);
+    void delete(int id);
 }

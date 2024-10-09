@@ -24,4 +24,13 @@
         <servlet-name>mealServlet</servlet-name>
         <url-pattern>/meals</url-pattern>
     </servlet-mapping>
+    <servlet>
+        <servlet-name>meal</servlet-name>
+        <jsp-file>/meal.jsp</jsp-file>
+        <load-on-startup>0</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>meal</servlet-name>
+        <url-pattern>/meal</url-pattern>
+    </servlet-mapping>
 </web-app>

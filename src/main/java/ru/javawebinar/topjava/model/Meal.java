@@ -5,7 +5,7 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 
 public class Meal {
-    private Integer id;
+    private int id;
 
     private final LocalDateTime dateTime;
 
@@ -13,19 +13,17 @@ public class Meal {
 
     private final int calories;
 
-    private boolean isDeleted;
-
     public Meal(LocalDateTime dateTime, String description, int calories) {
         this.dateTime = dateTime;
         this.description = description;
         this.calories = calories;
     }
 
-    public Integer getId() {
+    public int getId() {
         return id;
     }
 
-    public void setId(Integer id) {
+    public void setId(int id) {
         this.id = id;
     }
 
@@ -49,11 +47,13 @@ public class Meal {
         return dateTime.toLocalTime();
     }
 
-    public boolean getIsDeleted() {
-        return isDeleted;
-    }
-
-    public void setIsDeleted(boolean deleted) {
-        isDeleted = deleted;
+    @Override
+    public String toString() {
+        return "Meal{" +
+                "id=" + id +
+                ", dateTime=" + dateTime +
+                ", description='" + description + '\'' +
+                ", calories=" + calories +
+                '}';
     }
 }
