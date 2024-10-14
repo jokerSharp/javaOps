@@ -7,10 +7,13 @@ import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.repository.MealRepository;
 import ru.javawebinar.topjava.util.MealsUtil;
 
+import java.time.LocalDate;
 import java.util.*;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 import java.util.stream.Collectors;
+
+import static ru.javawebinar.topjava.util.DateTimeUtil.isBetweenHalfOpen;
 
 @Repository
 public class InMemoryMealRepository implements MealRepository {
@@ -56,6 +59,13 @@ public class InMemoryMealRepository implements MealRepository {
         return repository.values().stream()
                 .filter(m -> m.getUserId() == userId)
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
+                .collect(Collectors.toList());
+    }
+
+    @Override
+    public Collection<Meal> getAll(int userId, LocalDate dateFrom, LocalDate dateTo) {
+        return getAll(userId).stream()
+                .filter(meal -> isBetweenHalfOpen(meal.getDate(), dateFrom, dateTo))
                 .collect(Collectors.toList());
     }
 }

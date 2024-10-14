@@ -2,14 +2,14 @@ package ru.javawebinar.topjava.web.meal;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
 import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 
-import java.util.Arrays;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
@@ -33,17 +33,23 @@ public class MealRestController {
         return MealsUtil.getTos(service.getAll(userId), MealsUtil.DEFAULT_CALORIES_PER_DAY);
     }
 
-    public MealTo get(int id) {
+    public List<MealTo> getAllFiltered(LocalDate dateFrom, LocalDate dateTo, LocalTime timeFrom, LocalTime timeTo) {
         int userId = authUserId();
-        log.info("get {} for user with id {}", id, userId);
-        return MealsUtil.getTos(Arrays.asList(service.get(id, userId)), MealsUtil.DEFAULT_CALORIES_PER_DAY).stream().findFirst().get();
+        log.info("filtered getAll for user with id {}", userId);
+        return MealsUtil.getFilteredTos(service.getAll(userId, dateFrom, dateTo), MealsUtil.DEFAULT_CALORIES_PER_DAY, timeFrom, timeTo);
     }
 
-    public MealTo create(Meal meal) {
+    public Meal get(int id) {
+        int userId = authUserId();
+        log.info("get {} for user with id {}", id, userId);
+        return service.get(id, userId);
+    }
+
+    public Meal create(Meal meal) {
         int userId = authUserId();
         log.info("create {} for user with id {}", meal, userId);
         checkNew(meal);
-        return MealsUtil.getTos(Arrays.asList(service.create(meal, userId)), MealsUtil.DEFAULT_CALORIES_PER_DAY).stream().findFirst().get();
+        return service.create(meal, userId);
     }
 
     public void delete(int id) {

@@ -8,7 +8,14 @@
 <hr>
 <ul style="font-size: large">
     <li><a href="users">Users</a></li>
-    <li><a href="meals">Meals</a></li>
+    <li><form action="meals">
+        <select id="userId" name="userId">
+            <option value="">Select user</option>
+            <option value="1">Admin</option>
+            <option value="2">User</option>
+        </select>
+        <button type="submit">Meals</button>
+    </form></li>
 </ul>
 </body>
 </html>

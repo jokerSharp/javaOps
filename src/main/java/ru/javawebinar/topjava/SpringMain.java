@@ -5,6 +5,7 @@ import org.springframework.context.support.ClassPathXmlApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 import ru.javawebinar.topjava.web.user.AdminRestController;
@@ -23,6 +24,8 @@ public class SpringMain {
 
             //MealRestController tests
             MealRestController mealRestController = appCtx.getBean(MealRestController.class);
+            List<MealTo> mealToList = mealRestController.getAll();
+            mealToList.forEach(System.out::println);
             Meal firstUserMeal = new Meal(LocalDateTime.now(), "first user meal", 300);
             mealRestController.create(firstUserMeal);
             mealRestController.get(firstUserMeal.getId());

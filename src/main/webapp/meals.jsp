@@ -21,6 +21,13 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
+    <form method="get" action="meals">
+        Date from (including):<input type="date" name="dateFrom">
+        Date to (excluding):<input type="date" name="dateTo">
+        Time from (including):<input type="time" name="timeFrom">
+        Time to (excluding):<input type="time" name="timeTo">
+        <button type="submit">Filter</button>
+    </form>
     <a href="meals?action=create">Add Meal</a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
