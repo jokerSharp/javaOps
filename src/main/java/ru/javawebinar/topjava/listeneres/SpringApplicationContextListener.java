@@ -9,10 +9,15 @@ import javax.servlet.annotation.WebListener;
 
 @WebListener
 public class SpringApplicationContextListener implements ServletContextListener {
+    ConfigurableApplicationContext appCtx;
 
     @Override
     public void contextInitialized(ServletContextEvent sce) {
-        ConfigurableApplicationContext appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
+        appCtx = new ClassPathXmlApplicationContext("spring/spring-app.xml");
         sce.getServletContext().setAttribute("configurableApplicationContext", appCtx);
+    }
+
+    public void contextDestroyed(ServletContextEvent sce) {
+        appCtx.close();
     }
 }

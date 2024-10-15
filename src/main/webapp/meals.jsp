@@ -21,11 +21,12 @@
     <h3><a href="index.html">Home</a></h3>
     <hr/>
     <h2>Meals</h2>
+    <jsp:useBean id="mealFilter" type="ru.javawebinar.topjava.model.MealFilter" scope="request"/>
     <form method="get" action="meals">
-        Date from (including):<input type="date" name="dateFrom">
-        Date to (excluding):<input type="date" name="dateTo">
-        Time from (including):<input type="time" name="timeFrom">
-        Time to (excluding):<input type="time" name="timeTo">
+        Date from (including):<input type="date" value="${mealFilter.dateFrom}" name="dateFrom">
+        Date to (excluding):<input type="date" value="${mealFilter.dateTo}" name="dateTo">
+        Time from (including):<input type="time" value="${mealFilter.timeFrom}" name="timeFrom">
+        Time to (excluding):<input type="time" value="${mealFilter.timeTo}" name="timeTo">
         <button type="submit">Filter</button>
     </form>
     <a href="meals?action=create">Add Meal</a>

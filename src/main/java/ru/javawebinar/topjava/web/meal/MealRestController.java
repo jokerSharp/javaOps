@@ -14,6 +14,7 @@ import java.util.List;
 
 import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
 import static ru.javawebinar.topjava.util.ValidationUtil.checkNew;
+import static ru.javawebinar.topjava.web.SecurityUtil.authUserCaloriesPerDay;
 import static ru.javawebinar.topjava.web.SecurityUtil.authUserId;
 
 @Controller
@@ -30,13 +31,18 @@ public class MealRestController {
     public List<MealTo> getAll() {
         int userId = authUserId();
         log.info("getAll for user with id {}", userId);
-        return MealsUtil.getTos(service.getAll(userId), MealsUtil.DEFAULT_CALORIES_PER_DAY);
+        return MealsUtil.getTos(service.getAll(userId), authUserCaloriesPerDay());
     }
 
     public List<MealTo> getAllFiltered(LocalDate dateFrom, LocalDate dateTo, LocalTime timeFrom, LocalTime timeTo) {
         int userId = authUserId();
         log.info("filtered getAll for user with id {}", userId);
-        return MealsUtil.getFilteredTos(service.getAll(userId, dateFrom, dateTo), MealsUtil.DEFAULT_CALORIES_PER_DAY, timeFrom, timeTo);
+        LocalDate dateFromInController = dateFrom == null ? LocalDate.MIN : dateFrom;
+        LocalDate dateToInController = dateTo == null ? LocalDate.MAX : dateTo;
+        LocalTime timeFromInController = timeFrom == null ? LocalTime.MIN : timeFrom;
+        LocalTime timeToInController = timeTo == null ? LocalTime.MAX : timeTo;
+        return MealsUtil.getFilteredTos(service.getAllFiltered(userId, dateFromInController, dateToInController),
+                authUserCaloriesPerDay(), timeFromInController, timeToInController);
     }
 
     public Meal get(int id) {

@@ -4,6 +4,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
+import ru.javawebinar.topjava.model.MealFilter;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
@@ -21,18 +22,12 @@ import java.util.Objects;
 public class MealServlet extends HttpServlet {
 
     private static final Logger log = LoggerFactory.getLogger(MealServlet.class);
-    ConfigurableApplicationContext appCtx;
     private MealRestController controller;
 
     @Override
     public void init(ServletConfig config) {
-        appCtx = (ConfigurableApplicationContext) config.getServletContext().getAttribute("configurableApplicationContext");
+        ConfigurableApplicationContext appCtx = (ConfigurableApplicationContext) config.getServletContext().getAttribute("configurableApplicationContext");
         controller = appCtx.getBean(MealRestController.class);
-    }
-
-    @Override
-    public void destroy() {
-        appCtx.close();
     }
 
     @Override
@@ -40,13 +35,11 @@ public class MealServlet extends HttpServlet {
         request.setCharacterEncoding("UTF-8");
         String id = request.getParameter("id");
         log.debug("Parsed meal ID: {}", id);
-        int userId = SecurityUtil.authUserId();
 
         Meal meal = new Meal(id.isEmpty() ? null : Integer.valueOf(id),
                 LocalDateTime.parse(request.getParameter("dateTime")),
                 request.getParameter("description"),
                 Integer.parseInt(request.getParameter("calories")));
-        meal.setUserId(userId);
 
         log.info(meal.isNew() ? "Create {}" : "Update {}", meal);
         if (meal.isNew()) {
@@ -59,36 +52,13 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        LocalDate dateFrom;
-        LocalDate dateTo;
-        LocalTime timeFrom;
-        LocalTime timeTo;
-        try {
-            dateFrom = LocalDate.parse(request.getParameter("dateFrom"));
-        } catch (Exception e) {
-            dateFrom = LocalDate.MIN;
-        }
-        try {
-            dateTo = LocalDate.parse(request.getParameter("dateTo"));
-        } catch (Exception e) {
-            dateTo = LocalDate.MAX;
-        }
-        try {
-            timeFrom = LocalTime.parse(request.getParameter("timeFrom"));
-        } catch (Exception e) {
-            timeFrom = LocalTime.MIN;
-        }
-        try {
-            timeTo = LocalTime.parse(request.getParameter("timeTo"));
-        } catch (Exception e) {
-            timeTo = LocalTime.MAX;
-        }
+        LocalDate dateFrom = getDate(request, "dateFrom");
+        LocalDate dateTo = getDate(request, "dateTo");
+        LocalTime timeFrom = getTime(request, "timeFrom");
+        LocalTime timeTo = getTime(request, "timeTo");
 
-        try {
-            int userId = Integer.parseInt(request.getParameter("userId"));
-            SecurityUtil.setAuthUserId(userId);
-        } catch (NumberFormatException ignore) {
-        }
+        MealFilter mealFilter = new MealFilter(dateFrom, dateTo, timeFrom, timeTo);
+        request.setAttribute("mealFilter", mealFilter);
 
         String action = request.getParameter("action");
         switch (action == null ? "all" : action) {
@@ -118,5 +88,15 @@ public class MealServlet extends HttpServlet {
     private int getId(HttpServletRequest request) {
         String paramId = Objects.requireNonNull(request.getParameter("id"));
         return Integer.parseInt(paramId);
+    }
+
+    private LocalDate getDate(HttpServletRequest request, String parameter) {
+        String paramDate = request.getParameter(parameter);
+        return paramDate == null || paramDate.isEmpty() ? null : LocalDate.parse(paramDate);
+    }
+
+    private LocalTime getTime(HttpServletRequest request, String parameter) {
+        String paramTime = request.getParameter(parameter);
+        return paramTime == null || paramTime.isEmpty() ? null : LocalTime.parse(paramTime);
     }
 }

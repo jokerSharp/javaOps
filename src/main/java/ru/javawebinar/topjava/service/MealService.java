@@ -39,7 +39,7 @@ public class MealService {
         return new ArrayList<>(repository.getAll(userId));
     }
 
-    public List<Meal> getAll(int userId, LocalDate dateFrom, LocalDate dateTo) {
-        return new ArrayList<>(repository.getAll(userId, dateFrom, dateTo));
+    public List<Meal> getAllFiltered(int userId, LocalDate dateFrom, LocalDate dateTo) {
+        return new ArrayList<>(repository.getAllFiltered(userId, dateFrom, dateTo));
     }
 }
