@@ -22,12 +22,9 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        if (repository.containsKey(id)) {
-            User removedUser = repository.remove(id);
-            return removedUser != null;
-        } else {
-            return false;
-        }
+        User removedUser = repository.remove(id);
+        return removedUser != null;
+
     }
 
     @Override
