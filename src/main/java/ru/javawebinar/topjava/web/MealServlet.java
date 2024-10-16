@@ -4,7 +4,6 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.context.ConfigurableApplicationContext;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.MealFilter;
 import ru.javawebinar.topjava.web.meal.MealRestController;
 
 import javax.servlet.ServletConfig;
@@ -52,14 +51,6 @@ public class MealServlet extends HttpServlet {
 
     @Override
     protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-        LocalDate dateFrom = getDate(request, "dateFrom");
-        LocalDate dateTo = getDate(request, "dateTo");
-        LocalTime timeFrom = getTime(request, "timeFrom");
-        LocalTime timeTo = getTime(request, "timeTo");
-
-        MealFilter mealFilter = new MealFilter(dateFrom, dateTo, timeFrom, timeTo);
-        request.setAttribute("mealFilter", mealFilter);
-
         String action = request.getParameter("action");
         switch (action == null ? "all" : action) {
             case "delete":
@@ -79,6 +70,13 @@ public class MealServlet extends HttpServlet {
             case "all":
             default:
                 log.info("getAll");
+                LocalDate dateFrom = getDate(request, "dateFrom");
+                LocalDate dateTo = getDate(request, "dateTo");
+                LocalTime timeFrom = getTime(request, "timeFrom");
+                LocalTime timeTo = getTime(request, "timeTo");
+                MealFilter mealFilter = new MealFilter(dateFrom, dateTo, timeFrom, timeTo);
+                request.setAttribute("mealFilter", mealFilter);
+
                 request.setAttribute("meals", controller.getAllFiltered(dateFrom, dateTo, timeFrom, timeTo));
                 request.getRequestDispatcher("/meals.jsp").forward(request, response);
                 break;

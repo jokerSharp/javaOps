@@ -3,11 +3,13 @@ package ru.javawebinar.topjava.repository.inmemory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Repository;
-import ru.javawebinar.topjava.model.AbstractNamedEntity;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
+import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.atomic.AtomicInteger;
 
@@ -20,9 +22,9 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public boolean delete(int id) {
         log.info("delete {}", id);
-        if(repository.containsKey(id)) {
-            repository.remove(id);
-            return true;
+        if (repository.containsKey(id)) {
+            User removedUser = repository.remove(id);
+            return removedUser != null;
         } else {
             return false;
         }
@@ -31,8 +33,7 @@ public class InMemoryUserRepository implements UserRepository {
     @Override
     public User save(User user) {
         log.info("save {}", user);
-        boolean isEmailExists = repository.values().stream().anyMatch(u -> u.getEmail().equalsIgnoreCase(user.getEmail()));
-        if (user.isNew() && !isEmailExists) {
+        if (user.isNew()) {
             user.setId(counter.incrementAndGet());
             repository.put(user.getId(), user);
             return user;
@@ -50,7 +51,7 @@ public class InMemoryUserRepository implements UserRepository {
     public List<User> getAll() {
         log.info("getAll");
         List<User> users = new ArrayList<>(repository.values());
-        users.sort(Comparator.comparing(AbstractNamedEntity::getName).thenComparing(AbstractNamedEntity::getId));
+        users.sort(Comparator.comparing(User::getName).thenComparing(User::getEmail));
         return users;
     }
 

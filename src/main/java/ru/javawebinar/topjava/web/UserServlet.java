@@ -19,6 +19,6 @@ public class UserServlet extends HttpServlet {
         int userId = Integer.parseInt(request.getParameter("userId"));
         log.debug("parsed userId: {}", userId);
         SecurityUtil.setAuthUserId(userId);
-        request.getRequestDispatcher("/users.jsp").forward(request, response);
+        request.getRequestDispatcher("/meals").forward(request, response);
     }
 }
