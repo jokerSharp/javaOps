@@ -1,8 +1,14 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.Ignore;
+import org.junit.After;
+import org.junit.AfterClass;
+import org.junit.Rule;
 import org.junit.Test;
+import org.junit.rules.Stopwatch;
+import org.junit.rules.TestName;
 import org.junit.runner.RunWith;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ContextConfiguration;
@@ -14,6 +20,9 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -26,8 +35,28 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 })
 @RunWith(SpringRunner.class)
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
-@Ignore
 public class MealServiceTest {
+
+    private static final Logger LOG = LoggerFactory.getLogger(MealServiceTest.class);
+    private static final List<String> TEST_RESULTS = new ArrayList<>();
+
+    @Rule
+    public final Stopwatch stopwatch = new Stopwatch();
+
+    @Rule
+    public TestName name = new TestName();
+
+    @After
+    public void logExecutionTime() {
+        String testResult = String.format("Execution time for test %s is %d ms", name.getMethodName(), stopwatch.runtime(TimeUnit.MILLISECONDS));
+        LOG.debug(testResult);
+        TEST_RESULTS.add(testResult);
+    }
+
+    @AfterClass
+    public static void logTotalExecutionTime() {
+        TEST_RESULTS.forEach(LOG::info);
+    }
 
     @Autowired
     private MealService service;
