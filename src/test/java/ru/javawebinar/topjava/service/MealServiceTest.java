@@ -37,8 +37,8 @@ import static ru.javawebinar.topjava.UserTestData.USER_ID;
 @Sql(scripts = "classpath:db/populateDB.sql", config = @SqlConfig(encoding = "UTF-8"))
 public class MealServiceTest {
 
-    private static final Logger LOG = LoggerFactory.getLogger(MealServiceTest.class);
-    private static final List<String> TEST_RESULTS = new ArrayList<>();
+    private static final Logger log = LoggerFactory.getLogger(MealServiceTest.class);
+    private static final StringBuilder TEST_RESULTS = new StringBuilder();
 
     @Rule
     public final Stopwatch stopwatch = new Stopwatch();
@@ -48,14 +48,14 @@ public class MealServiceTest {
 
     @After
     public void logExecutionTime() {
-        String testResult = String.format("Execution time for test %s is %d ms", name.getMethodName(), stopwatch.runtime(TimeUnit.MILLISECONDS));
-        LOG.debug(testResult);
-        TEST_RESULTS.add(testResult);
+        String testResult = String.format("%-25s - %-25d", name.getMethodName(), stopwatch.runtime(TimeUnit.MILLISECONDS));
+        log.debug(testResult);
+        TEST_RESULTS.append("\n").append(testResult);
     }
 
     @AfterClass
     public static void logTotalExecutionTime() {
-        TEST_RESULTS.forEach(LOG::info);
+        log.info(TEST_RESULTS.toString());
     }
 
     @Autowired
