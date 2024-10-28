@@ -19,6 +19,7 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
+import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -40,7 +41,8 @@ public class MealServiceTest {
     public final Stopwatch stopwatch = new Stopwatch() {
         @Override
         protected void finished(long nanos, Description description) {
-            String testResult = String.format("%-25s - %d ms", description.getMethodName(), nanos / 1000000);
+            String testResult = String.format("%-25s - %d ms", description.getMethodName(),
+                    TimeUnit.NANOSECONDS.toMillis(nanos));
             log.debug(testResult);
             TEST_RESULTS.append("\n").append(testResult);
         }
