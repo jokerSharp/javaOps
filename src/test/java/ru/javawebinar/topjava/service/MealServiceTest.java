@@ -1,11 +1,10 @@
 package ru.javawebinar.topjava.service;
 
-import org.junit.After;
 import org.junit.AfterClass;
 import org.junit.Rule;
 import org.junit.Test;
 import org.junit.rules.Stopwatch;
-import org.junit.rules.TestName;
+import org.junit.runner.Description;
 import org.junit.runner.RunWith;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -20,9 +19,6 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import java.time.LocalDate;
 import java.time.Month;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.concurrent.TimeUnit;
 
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.MealTestData.*;
@@ -41,17 +37,14 @@ public class MealServiceTest {
     private static final StringBuilder TEST_RESULTS = new StringBuilder();
 
     @Rule
-    public final Stopwatch stopwatch = new Stopwatch();
-
-    @Rule
-    public TestName name = new TestName();
-
-    @After
-    public void logExecutionTime() {
-        String testResult = String.format("%-25s - %-25d", name.getMethodName(), stopwatch.runtime(TimeUnit.MILLISECONDS));
-        log.debug(testResult);
-        TEST_RESULTS.append("\n").append(testResult);
-    }
+    public final Stopwatch stopwatch = new Stopwatch() {
+        @Override
+        protected void finished(long nanos, Description description) {
+            String testResult = String.format("%-25s - %d ms", description.getMethodName(), nanos / 1000000);
+            log.debug(testResult);
+            TEST_RESULTS.append("\n").append(testResult);
+        }
+    };
 
     @AfterClass
     public static void logTotalExecutionTime() {
