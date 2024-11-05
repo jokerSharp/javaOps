@@ -45,6 +45,11 @@ public class UserService {
         return repository.getAll();
     }
 
+    @Cacheable("users")
+    public User getWithMeals(int id) {
+        return checkNotFound(repository.getWithMeals(id), id);
+    }
+
     @CacheEvict(value = "users", allEntries = true)
     public void update(User user) {
         Assert.notNull(user, "user must not be null");

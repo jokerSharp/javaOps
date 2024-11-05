@@ -47,27 +47,30 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
+        return filterByPredicate(userId, meal -> true);
+    }
+
+    @Override
+    public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
+        return filterByPredicate(userId, meal -> Util.isBetweenHalfOpen(meal.getDateTime(), startDateTime, endDateTime));
+    }
+
+    private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {
         return crudRepository.findAll().stream()
                 .filter(meal -> meal.getUser().getId() == userId)
+                .filter(filter)
                 .sorted(Comparator.comparing(Meal::getDateTime).reversed())
                 .toList();
     }
 
     @Override
-    public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        return crudRepository.findAll().stream()
+    public Meal getWithUser(int id, int userId) {
+        return crudRepository.findById(id)
                 .filter(meal -> meal.getUser().getId() == userId)
-                .filter(meal -> Util.isBetweenHalfOpen(meal.getDateTime(), startDateTime, endDateTime))
-                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
-                .toList();
+                .map(meal -> {
+                    meal.setUser(userRepository.findById(userId).get());
+                    return meal;
+                })
+                .orElse(null);
     }
-
-//    private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {
-//        var meals = userRepository.getReferenceById(userId);
-//        return meals == null ? Collections.emptyList() :
-//                meals.getCollection().stream()
-//                        .filter(filter)
-//                        .sorted(Comparator.comparing(Meal::getDateTime).reversed())
-//                        .toList();
-//    }
 }

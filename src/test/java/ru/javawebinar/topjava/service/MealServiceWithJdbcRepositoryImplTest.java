@@ -5,6 +5,6 @@ import org.springframework.test.context.ActiveProfiles;
 import static ru.javawebinar.topjava.Profiles.JDBC;
 
 @ActiveProfiles(profiles = JDBC)
-public class MealServiceWithJdbcRepositoryImplTest extends BaseMealServiceTest {
+public class MealServiceWithJdbcRepositoryImplTest extends AbstractMealServiceTest {
 
 }

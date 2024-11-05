@@ -20,4 +20,9 @@ public interface MealRepository {
 
     // ORDERED dateTime desc
     List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId);
+
+    //only for data jpa
+    default Meal getWithUser(int id, int userId) {
+        return get(id, userId);
+    };
 }
