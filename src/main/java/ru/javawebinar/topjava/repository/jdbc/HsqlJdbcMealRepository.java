@@ -17,14 +17,14 @@ import static ru.javawebinar.topjava.Profiles.HSQL_DB;
 
 @Profile(HSQL_DB)
 @Repository
-public class HsqlJdbcMealRepository extends AbstractJdbcMealRepository {
+public class HsqlJdbcMealRepository extends AbstractJdbcMealRepository<Timestamp> {
 
     public HsqlJdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         super(jdbcTemplate, namedParameterJdbcTemplate);
     }
 
     @Override
-    Object getTimestamp(LocalDateTime localDateTime) {
+    Timestamp getSupportedDateTimeFormat(LocalDateTime localDateTime) {
         return Timestamp.from(localDateTime.atZone(ZoneId.systemDefault()).toInstant());
     }
 }
