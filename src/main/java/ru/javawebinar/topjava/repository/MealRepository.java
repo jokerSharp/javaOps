@@ -23,6 +23,6 @@ public interface MealRepository {
 
     //only for data jpa
     default Meal getWithUser(int id, int userId) {
-        return get(id, userId);
+        throw new UnsupportedOperationException();
     };
 }

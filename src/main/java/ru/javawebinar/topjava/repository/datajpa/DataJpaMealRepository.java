@@ -2,16 +2,10 @@ package ru.javawebinar.topjava.repository.datajpa;
 
 import org.springframework.stereotype.Repository;
 import ru.javawebinar.topjava.model.Meal;
-import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.MealRepository;
-import ru.javawebinar.topjava.util.Util;
 
-import javax.persistence.EntityManager;
 import java.time.LocalDateTime;
-import java.util.Collections;
-import java.util.Comparator;
 import java.util.List;
-import java.util.function.Predicate;
 
 @Repository
 public class DataJpaMealRepository implements MealRepository {
@@ -26,11 +20,12 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public Meal save(Meal meal, int userId) {
-        meal.setUser(userRepository.getReferenceById(userId));
-        if (meal.isNew()) {
+        if (meal.isNew() || get(meal.getId(), userId) != null) {
+            meal.setUser(userRepository.getReferenceById(userId));
             return crudRepository.save(meal);
+        } else {
+            return null;
         }
-        return get(meal.id(), userId) == null ? null : crudRepository.save(meal);
     }
 
     @Override
@@ -47,20 +42,12 @@ public class DataJpaMealRepository implements MealRepository {
 
     @Override
     public List<Meal> getAll(int userId) {
-        return filterByPredicate(userId, meal -> true);
+        return crudRepository.findAllByUserId(userId);
     }
 
     @Override
     public List<Meal> getBetweenHalfOpen(LocalDateTime startDateTime, LocalDateTime endDateTime, int userId) {
-        return filterByPredicate(userId, meal -> Util.isBetweenHalfOpen(meal.getDateTime(), startDateTime, endDateTime));
-    }
-
-    private List<Meal> filterByPredicate(int userId, Predicate<Meal> filter) {
-        return crudRepository.findAll().stream()
-                .filter(meal -> meal.getUser().getId() == userId)
-                .filter(filter)
-                .sorted(Comparator.comparing(Meal::getDateTime).reversed())
-                .toList();
+        return crudRepository.findAllByUserIdAndDateTimeBetween(userId, startDateTime, endDateTime);
     }
 
     @Override

@@ -21,6 +21,6 @@ public interface UserRepository {
 
     //only for data jpa
     default User getWithMeals(int id) {
-        return get(id);
+        throw new UnsupportedOperationException();
     };
 }

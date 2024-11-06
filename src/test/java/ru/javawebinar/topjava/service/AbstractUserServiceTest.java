@@ -7,12 +7,10 @@ import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
 import org.springframework.test.context.ActiveProfiles;
 import ru.javawebinar.topjava.UserTestData;
-import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
-import java.util.Comparator;
 import java.util.List;
 
 import static org.junit.Assert.assertThrows;
@@ -21,14 +19,13 @@ import static ru.javawebinar.topjava.MealTestData.meals;
 import static ru.javawebinar.topjava.Profiles.DATAJPA;
 import static ru.javawebinar.topjava.UserTestData.*;
 
-@ActiveProfiles(profiles = DATAJPA)
-public class UserServiceTest extends AbstractServiceTest {
+public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Autowired
-    private UserService service;
+    protected UserService service;
 
     @Autowired
-    private CacheManager cacheManager;
+    protected CacheManager cacheManager;
 
     @Before
     public void setup() {
@@ -90,11 +87,5 @@ public class UserServiceTest extends AbstractServiceTest {
     public void getAll() {
         List<User> all = service.getAll();
         USER_MATCHER.assertMatch(all, admin, guest, user);
-    }
-
-    @Test
-    public void getWithMeals() {
-        User user = service.getWithMeals(USER_ID);
-        MEAL_MATCHER.assertMatch(user.getMeals(), meals);
     }
 }
