@@ -19,6 +19,8 @@ import javax.validation.Validator;
 import java.time.LocalDateTime;
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.ValidationUtil.validateEntity;
+
 @Repository
 @Transactional(readOnly = true)
 public class JdbcMealRepository implements MealRepository {
@@ -31,10 +33,6 @@ public class JdbcMealRepository implements MealRepository {
 
     private final SimpleJdbcInsert insertMeal;
 
-    private final Validator validator;
-
-    private static final Logger log = LoggerFactory.getLogger(JdbcUserRepository.class);
-
     public JdbcMealRepository(JdbcTemplate jdbcTemplate, NamedParameterJdbcTemplate namedParameterJdbcTemplate) {
         this.insertMeal = new SimpleJdbcInsert(jdbcTemplate)
                 .withTableName("meal")
@@ -42,13 +40,12 @@ public class JdbcMealRepository implements MealRepository {
 
         this.jdbcTemplate = jdbcTemplate;
         this.namedParameterJdbcTemplate = namedParameterJdbcTemplate;
-        validator = Validation.buildDefaultValidatorFactory().getValidator();
     }
 
     @Transactional
     @Override
     public Meal save(Meal meal, int userId) {
-        validator.validate(meal).forEach(violation -> log.debug(violation.getMessage()));
+        validateEntity(meal);
         MapSqlParameterSource map = new MapSqlParameterSource()
                 .addValue("id", meal.getId())
                 .addValue("description", meal.getDescription())

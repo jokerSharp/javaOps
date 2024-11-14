@@ -5,18 +5,12 @@
 <%@ taglib prefix="spring" uri="http://www.springframework.org/tags" %>
 <html>
 <jsp:include page="fragments/headTag.jsp"/>
-<head>
-    <title>Meals</title>
-    <link rel="stylesheet" href="css/style.css">
-</head>
 <body>
 <jsp:include page="fragments/bodyHeader.jsp"/>
 <section>
-    <h3><a href="index.jsp">Home</a></h3>
     <hr/>
     <h2><spring:message code="meal.title"/></h2>
     <form method="get" action="meals">
-        <input type="hidden" name="action" value="filter">
         <dl>
             <dt><spring:message code="meals.filter.date.from"/></dt>
             <dd><input type="date" name="startDate" value="${param.startDate}"></dd>
@@ -36,7 +30,7 @@
         <button type="submit"><spring:message code="meals.filter.button"/></button>
     </form>
     <hr/>
-    <a href="mealForm"><spring:message code="meals.add.meal"/></a>
+    <a href="meals/form"><spring:message code="meals.add.meal"/></a>
     <br><br>
     <table border="1" cellpadding="8" cellspacing="0">
         <thead>
@@ -60,7 +54,7 @@
                 <td>${meal.description}</td>
                 <td>${meal.calories}</td>
                 <td>
-                    <a href="mealForm?id=${meal.id}"><spring:message code="meals.table.update"/></a>
+                    <a href="meals/form?id=${meal.id}"><spring:message code="meals.table.update"/></a>
                 </td>
                 <td>
                     <form method="post" action="meals?id=${meal.id}">
@@ -72,5 +66,6 @@
         </c:forEach>
     </table>
 </section>
+<jsp:include page="fragments/footer.jsp"/>
 </body>
 </html>
