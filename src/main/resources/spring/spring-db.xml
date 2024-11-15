@@ -112,6 +112,12 @@
               p:entityManagerFactory-ref="entityManagerFactory"/>
 
         <bean class="ru.javawebinar.topjava.repository.JpaUtil"/>
+
+        <bean id="cacheManager" class="org.springframework.cache.support.NoOpCacheManager"/>
+
+        <bean id="propertyOverrideConfigurer" class="org.springframework.beans.factory.config.PropertyOverrideConfigurer">
+            <property name="location" value="classpath:cache/override.properties" />
+        </bean>
     </beans>
 
     <beans profile="jpa">
