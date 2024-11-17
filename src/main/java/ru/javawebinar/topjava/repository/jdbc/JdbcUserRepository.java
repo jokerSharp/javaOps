@@ -1,7 +1,5 @@
 package ru.javawebinar.topjava.repository.jdbc;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.dao.support.DataAccessUtils;
 import org.springframework.jdbc.core.BatchPreparedStatementSetter;
@@ -29,7 +27,7 @@ public class JdbcUserRepository implements UserRepository {
 
     private static final BeanPropertyRowMapper<User> ROW_MAPPER = BeanPropertyRowMapper.newInstance(User.class);
 
-    private static final ResultSetExtractor<List<User>> userWithRolesExtractor = rs -> {
+    private static final ResultSetExtractor<List<User>> USER_WITH_ROLES_EXTRACTOR = rs -> {
         Map<Integer, User> userMap = new LinkedHashMap<>();
         while (rs.next()) {
             Integer userId = rs.getInt("id");
@@ -102,8 +100,10 @@ public class JdbcUserRepository implements UserRepository {
         } else if (namedParameterJdbcTemplate.update("""
                    UPDATE users SET name=:name, email=:email, password=:password, 
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
-                """, parameterSource) == 0
-                || Arrays.stream(jdbcTemplate.batchUpdate("UPDATE user_role SET role=? WHERE user_id=?",
+                """, parameterSource) == 0) {
+            return null;
+        } else if (!user.getRoles().isEmpty()
+                && Arrays.stream(jdbcTemplate.batchUpdate("UPDATE user_role SET role=? WHERE user_id=?",
                 new BatchPreparedStatementSetter() {
                     @Override
                     public void setValues(PreparedStatement ps, int i) throws SQLException {
@@ -119,6 +119,8 @@ public class JdbcUserRepository implements UserRepository {
                     }
                 })).anyMatch(value -> value == 0)) {
             return null;
+        } else if (jdbcTemplate.update("DELETE FROM user_role WHERE user_id=?", user.getId()) == 0) {
+            return null;
         }
         return user;
     }
@@ -133,7 +135,7 @@ public class JdbcUserRepository implements UserRepository {
     public User get(int id) {
         List<User> users = jdbcTemplate.query(
                 "SELECT * FROM users u LEFT JOIN user_role ur ON u.id=ur.user_id WHERE id=?",
-                userWithRolesExtractor, id);
+                USER_WITH_ROLES_EXTRACTOR, id);
         return DataAccessUtils.singleResult(users);
     }
 
@@ -141,7 +143,7 @@ public class JdbcUserRepository implements UserRepository {
     public User getByEmail(String email) {
         List<User> users = jdbcTemplate.query(
                 "SELECT * FROM users u LEFT JOIN user_role ur ON u.id=ur.user_id WHERE email=?",
-                userWithRolesExtractor, email);
+                USER_WITH_ROLES_EXTRACTOR, email);
         return DataAccessUtils.singleResult(users);
     }
 
@@ -149,6 +151,6 @@ public class JdbcUserRepository implements UserRepository {
     public List<User> getAll() {
         return jdbcTemplate.query(
                 "SELECT * FROM users u LEFT JOIN user_role ur ON u.id=ur.user_id ORDER BY name, email",
-                userWithRolesExtractor);
+                USER_WITH_ROLES_EXTRACTOR);
     }
 }
