@@ -100,29 +100,34 @@ public class JdbcUserRepository implements UserRepository {
         } else if (namedParameterJdbcTemplate.update("""
                    UPDATE users SET name=:name, email=:email, password=:password, 
                    registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
-                """, parameterSource) == 0) {
-            return null;
-        } else if (!user.getRoles().isEmpty()
-                && Arrays.stream(jdbcTemplate.batchUpdate("UPDATE user_role SET role=? WHERE user_id=?",
-                new BatchPreparedStatementSetter() {
-                    @Override
-                    public void setValues(PreparedStatement ps, int i) throws SQLException {
-                        for (Role role : user.getRoles()) {
-                            ps.setInt(2, user.getId());
-                            ps.setString(1, role.name());
-                        }
-                    }
-
-                    @Override
-                    public int getBatchSize() {
-                        return user.getRoles().size();
-                    }
-                })).anyMatch(value -> value == 0)) {
-            return null;
-        } else if (jdbcTemplate.update("DELETE FROM user_role WHERE user_id=?", user.getId()) == 0) {
+                """, parameterSource) == 0
+                || updateRoles(user) == 0) {
             return null;
         }
         return user;
+    }
+
+    private int updateRoles(User user) {
+        if (!user.getRoles().isEmpty()) {
+            return Arrays.stream(jdbcTemplate.batchUpdate("UPDATE user_role SET role=? WHERE user_id=?",
+                    new BatchPreparedStatementSetter() {
+                        @Override
+                        public void setValues(PreparedStatement ps, int i) throws SQLException {
+                            for (Role role : user.getRoles()) {
+                                ps.setInt(2, user.getId());
+                                ps.setString(1, role.name());
+                            }
+                        }
+
+                        @Override
+                        public int getBatchSize() {
+                            return user.getRoles().size();
+                        }
+                    }))
+                    .sum();
+        } else {
+            return jdbcTemplate.update("DELETE FROM user_role WHERE user_id=?", user.getId());
+        }
     }
 
     @Override
