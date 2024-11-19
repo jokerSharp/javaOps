@@ -4,25 +4,18 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.lang.Nullable;
-import org.springframework.ui.Model;
-import org.springframework.util.StringUtils;
-import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestParam;
 import ru.javawebinar.topjava.model.Meal;
 import ru.javawebinar.topjava.service.MealService;
+import ru.javawebinar.topjava.to.MealTo;
 import ru.javawebinar.topjava.util.MealsUtil;
 import ru.javawebinar.topjava.web.SecurityUtil;
 
-import javax.servlet.http.HttpServletRequest;
-import java.time.LocalDateTime;
-import java.time.temporal.ChronoUnit;
+import java.time.LocalDate;
+import java.time.LocalTime;
 import java.util.List;
-import java.util.Objects;
 
-import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
-import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
+import static ru.javawebinar.topjava.util.ValidationUtil.assureIdConsistent;
+import static ru.javawebinar.topjava.util.ValidationUtil.checkIsNew;
 
 public abstract class AbstractMealController {
 
@@ -31,60 +24,50 @@ public abstract class AbstractMealController {
     @Autowired
     protected MealService service;
 
-    @GetMapping()
-    public String getAllFiltered(Model model,
-                                 @Nullable @RequestParam(value = "startDate", required = false) String startDate,
-                                 @Nullable @RequestParam(value = "startTime", required = false) String startTime,
-                                 @Nullable @RequestParam(value = "endDate", required = false) String endDate,
-                                 @Nullable @RequestParam(value = "endTime", required = false) String endTime) {
+    public Meal get(int id) {
+        int userId = SecurityUtil.authUserId();
+        log.info("get meal {} for user {}", id, userId);
+        return service.get(id, userId);
+    }
+
+    public void delete(int id) {
+        int userId = SecurityUtil.authUserId();
+        log.info("delete meal {} for user {}", id, userId);
+        service.delete(id, userId);
+    }
+
+    public List<MealTo> getAll() {
+        int userId = SecurityUtil.authUserId();
+        log.info("getAll for user {}", userId);
+        return MealsUtil.getTos(service.getAll(userId), SecurityUtil.authUserCaloriesPerDay());
+    }
+
+    public Meal create(Meal meal) {
+        int userId = SecurityUtil.authUserId();
+        checkIsNew(meal);
+        log.info("create {} for user {}", meal, userId);
+        return service.create(meal, userId);
+    }
+
+    public void update(Meal meal, int id) {
+        int userId = SecurityUtil.authUserId();
+        assureIdConsistent(meal, id);
+        log.info("update {} for user {}", meal, userId);
+        service.update(meal, userId);
+    }
+
+    /**
+     * <ol>Filter separately
+     * <li>by date</li>
+     * <li>by time for every date</li>
+     * </ol>
+     */
+    public List<MealTo> getBetween(@Nullable LocalDate startDate, @Nullable LocalTime startTime,
+                                   @Nullable LocalDate endDate, @Nullable LocalTime endTime) {
         int userId = SecurityUtil.authUserId();
         log.info("getBetween dates({} - {}) time({} - {}) for user {}", startDate, endDate, startTime, endTime, userId);
-        List<Meal> mealsDateFiltered = service
-                .getBetweenInclusive(parseLocalDate(startDate), parseLocalDate(endDate), userId);
-        model.addAttribute("meals", MealsUtil.getFilteredTos(mealsDateFiltered,
-                SecurityUtil.authUserCaloriesPerDay(), parseLocalTime(startTime), parseLocalTime(endTime)));
-        return "meals";
-    }
 
-    @PostMapping()
-    public String addMeal(HttpServletRequest request) {
-        log.info("Adding meal");
-        Integer mealId = getId(request);
-        Meal meal = new Meal(
-                mealId,
-                LocalDateTime.parse(request.getParameter("dateTime")),
-                request.getParameter("description"),
-                Integer.parseInt(request.getParameter("calories")));
-        if (mealId != null) {
-            service.update(meal, SecurityUtil.authUserId());
-        } else {
-            service.create(meal, SecurityUtil.authUserId());
-        }
-        return "redirect:/meals";
-    }
-
-    @DeleteMapping()
-    public String deleteMeal(@RequestParam("id") Integer id) {
-        log.info("Deleting meal");
-        service.delete(id, SecurityUtil.authUserId());
-        return "redirect:/meals";
-    }
-
-    @GetMapping("/form")
-    public String addMeal(@RequestParam(value = "id", required = false) Integer id, Model model) {
-        log.info("Edit meal form");
-        if (id == null) {
-            model.addAttribute("meal",
-                    new Meal(LocalDateTime.now().truncatedTo(ChronoUnit.MINUTES), "", 1000));
-        } else {
-            Meal meal = service.get(id, SecurityUtil.authUserId());
-            model.addAttribute("meal", meal);
-        }
-        return "mealForm";
-    }
-
-    protected Integer getId(HttpServletRequest request) {
-        String paramId = Objects.requireNonNull(request.getParameter("id"));
-        return StringUtils.hasLength(request.getParameter("id")) ? Integer.parseInt(paramId) : null;
+        List<Meal> mealsDateFiltered = service.getBetweenInclusive(startDate, endDate, userId);
+        return MealsUtil.getFilteredTos(mealsDateFiltered, SecurityUtil.authUserCaloriesPerDay(), startTime, endTime);
     }
 }

@@ -108,26 +108,26 @@ public class JdbcUserRepository implements UserRepository {
     }
 
     private int updateRoles(User user) {
+        int affectedRows = jdbcTemplate.update("DELETE FROM user_role WHERE user_id=?", user.getId());
         if (!user.getRoles().isEmpty()) {
-            return Arrays.stream(jdbcTemplate.batchUpdate("UPDATE user_role SET role=? WHERE user_id=?",
-                    new BatchPreparedStatementSetter() {
-                        @Override
-                        public void setValues(PreparedStatement ps, int i) throws SQLException {
-                            for (Role role : user.getRoles()) {
-                                ps.setInt(2, user.getId());
-                                ps.setString(1, role.name());
-                            }
-                        }
+            List<Role> uniqueRoles = new ArrayList<>(user.getRoles());
+            return Arrays.stream(jdbcTemplate.batchUpdate("INSERT INTO user_role (user_id, role) VALUES (?, ?)",
+                            new BatchPreparedStatementSetter() {
+                                @Override
+                                public void setValues(PreparedStatement ps, int i) throws SQLException {
+                                    Role role = uniqueRoles.get(i);
+                                    ps.setInt(1, user.getId());
+                                    ps.setString(2, role.name());
+                                }
 
-                        @Override
-                        public int getBatchSize() {
-                            return user.getRoles().size();
-                        }
-                    }))
+                                @Override
+                                public int getBatchSize() {
+                                    return user.getRoles().size();
+                                }
+                            }))
                     .sum();
-        } else {
-            return jdbcTemplate.update("DELETE FROM user_role WHERE user_id=?", user.getId());
         }
+        return affectedRows;
     }
 
     @Override

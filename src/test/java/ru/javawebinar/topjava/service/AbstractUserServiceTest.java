@@ -12,6 +12,7 @@ import ru.javawebinar.topjava.repository.JpaUtil;
 import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.validation.ConstraintViolationException;
+import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
@@ -50,14 +51,15 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Test
     public void createWithoutRole() {
-        User tmp = getNew();
-        tmp.getRoles().clear();
-        User created = service.create(tmp);
+        User newUser = getNew();
+        newUser.getRoles().clear();
+        User created = service.create(newUser);
         int newId = created.id();
-        User newUser = tmp;
-        newUser.setId(newId);
-        USER_MATCHER.assertMatch(created, newUser);
-        USER_MATCHER.assertMatch(service.get(newId), newUser);
+        User expected = getNew();
+        expected.getRoles().clear();
+        expected.setId(newId);
+        USER_MATCHER.assertMatch(created, expected);
+        USER_MATCHER.assertMatch(service.get(newId), expected);
     }
 
     @Test
@@ -107,6 +109,36 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         updated.getRoles().clear();
         service.update(updated);
         USER_MATCHER.assertMatch(service.get(USER_ID), updated);
+    }
+
+    @Test
+    public void updateAddFirstRole() {
+        User updated = new User(guest);
+        updated.setRoles(Collections.singletonList(Role.USER));
+        service.update(updated);
+        User expected = new User(guest);
+        expected.setRoles(Collections.singletonList(Role.USER));
+        USER_MATCHER.assertMatch(service.get(GUEST_ID), expected);
+    }
+
+    @Test
+    public void updateAddSecondRole() {
+        User updated = getUpdated();
+        updated.getRoles().add(Role.USER);
+        service.update(updated);
+        User expected = getUpdated();
+        expected.getRoles().add(Role.USER);
+        USER_MATCHER.assertMatch(service.get(USER_ID), expected);
+    }
+
+    @Test
+    public void updateRemoveRole() {
+        User updated = new User(admin);
+        updated.setRoles(Collections.singletonList(Role.USER));
+        service.update(updated);
+        User expected = new User(admin);
+        expected.setRoles(Collections.singletonList(Role.USER));
+        USER_MATCHER.assertMatch(service.get(ADMIN_ID), expected);
     }
 
     @Test
