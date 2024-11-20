@@ -5,6 +5,7 @@ import org.junit.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.cache.CacheManager;
 import org.springframework.dao.DataAccessException;
+import org.springframework.test.annotation.DirtiesContext;
 import ru.javawebinar.topjava.UserTestData;
 import ru.javawebinar.topjava.model.Role;
 import ru.javawebinar.topjava.model.User;
@@ -20,6 +21,7 @@ import java.util.Set;
 import static org.junit.Assert.assertThrows;
 import static ru.javawebinar.topjava.UserTestData.*;
 
+@DirtiesContext(classMode = DirtiesContext.ClassMode.AFTER_EACH_TEST_METHOD)
 public abstract class AbstractUserServiceTest extends AbstractServiceTest {
 
     @Autowired
@@ -118,6 +120,16 @@ public abstract class AbstractUserServiceTest extends AbstractServiceTest {
         service.update(updated);
         User expected = new User(guest);
         expected.setRoles(Collections.singletonList(Role.USER));
+        USER_MATCHER.assertMatch(service.get(GUEST_ID), expected);
+    }
+
+    @Test
+    public void updateWithoutRole() {
+        User updated = new User(guest);
+        updated.setCaloriesPerDay(1234);
+        service.update(updated);
+        User expected = new User(guest);
+        expected.setCaloriesPerDay(1234);
         USER_MATCHER.assertMatch(service.get(GUEST_ID), expected);
     }
 

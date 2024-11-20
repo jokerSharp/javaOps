@@ -97,12 +97,16 @@ public class JdbcUserRepository implements UserRepository {
                     }
                 });
             }
-        } else if (namedParameterJdbcTemplate.update("""
-                   UPDATE users SET name=:name, email=:email, password=:password, 
-                   registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
-                """, parameterSource) == 0
-                || updateRoles(user) == 0) {
-            return null;
+        } else {
+            int updatedUserRows = namedParameterJdbcTemplate.update("""
+                       UPDATE users SET name=:name, email=:email, password=:password, 
+                       registered=:registered, enabled=:enabled, calories_per_day=:caloriesPerDay WHERE id=:id
+                    """, parameterSource);
+            int updatedRolesRows = updateRoles(user);
+            if ((updatedUserRows + updatedRolesRows) == 0) {
+                return null;
+            }
+            return user;
         }
         return user;
     }
