@@ -42,23 +42,72 @@ class MealRestControllerTest extends AbstractControllerTest {
     @Test
     void getBetween() throws Exception {
         List<MealTo> expected = MealsUtil.getTos(List.of(meal7, meal6), SecurityUtil.authUserCaloriesPerDay());
-        String start = "2020-01-31T13:00";
-        String end = "2020-01-31T21:00:00";
-        perform(MockMvcRequestBuilders.get(REST_URL + "filter")
-                .queryParam("startDateTime", start)
-                .queryParam("endDateTime", end))
+        String filtrationString = "filter?startDate=2020-01-31&startTime=13:00&endDate=2020-01-31&endTime=21:00";
+        perform(MockMvcRequestBuilders.get(REST_URL + filtrationString))
                 .andExpect(status().isOk())
                 .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
                 .andExpect(MEAL_TO_MATCHER.contentJson(expected));
     }
 
     @Test
+    void getBetweenDates() throws Exception {
+        List<MealTo> expected = MealsUtil.getTos(List.of(meal3, meal2, meal1), SecurityUtil.authUserCaloriesPerDay());
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter")
+                .queryParam("startDate", "2020-01-30")
+                .queryParam("endDate", "2020-01-30"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(expected));
+    }
+
+    @Test
+    void getBetweenTime() throws Exception {
+        List<MealTo> expected = MealsUtil.getTos(List.of(meal6, meal5, meal2, meal1), SecurityUtil.authUserCaloriesPerDay());
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter")
+                .queryParam("startTime", "09:00")
+                .queryParam("endTime", "15:00"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(expected));
+    }
+
+    @Test
+    void getBetweenOnlyStartParameters() throws Exception {
+        List<MealTo> expected = MealsUtil.getTos(List.of(meal7, meal6, meal5, meal4), SecurityUtil.authUserCaloriesPerDay());
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter")
+                .queryParam("startDate", "2020-01-31")
+                .queryParam("startTime", "00:00"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(expected));
+    }
+
+    @Test
+    void getBetweenOnlyEndParameters() throws Exception {
+        List<MealTo> expected = MealsUtil.getTos(List.of(meal2, meal1), SecurityUtil.authUserCaloriesPerDay());
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter")
+                .queryParam("endDate", "2020-01-30")
+                .queryParam("endTime", "14:00"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(expected));
+    }
+
+    @Test
+    void getBetweenNoParameters() throws Exception {
+        perform(MockMvcRequestBuilders.get(REST_URL + "filter"))
+                .andExpect(status().isOk())
+                .andExpect(content().contentTypeCompatibleWith(MediaType.APPLICATION_JSON))
+                .andExpect(MEAL_TO_MATCHER.contentJson(MealsUtil.getTos(meals, SecurityUtil.authUserCaloriesPerDay())));
+    }
+
+    @Test
     void createWithLocation() throws Exception {
         Meal newMeal = MealTestData.getNew();
-        System.out.println(JsonUtil.writeValue(newMeal));
         ResultActions action = perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newMeal)))
+                .andDo(print())
                 .andExpect(status().isCreated());
 
         Meal created = MEAL_MATCHER.readFromJson(action);
