@@ -30,14 +30,9 @@ public class CustomLocalDateTimeFormatAnnotationFormatterFactory
     }
 
     private Formatter<?> getFormatter(CustomLocalDateTimeFormat annotation, Class<?> fieldType) {
-        switch (annotation.type()) {
-            case DATE -> {
-                return new CustomLocalDateFormatter();
-            }
-            case TIME -> {
-                return new CustomLocalTimeFormatter();
-            }
-        }
-        return null;
+        return switch (annotation.type()) {
+            case DATE -> new CustomLocalDateFormatter();
+            case TIME -> new CustomLocalTimeFormatter();
+        };
     }
 }
