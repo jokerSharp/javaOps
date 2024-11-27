@@ -1,4 +1,4 @@
-# A list of cURL's to check functionality of MealRestController
+# A list of cURL's to check functionality of Meals API
 
 ## get meals
 curl --location 'http://localhost:8080/topjava/rest/meals'
