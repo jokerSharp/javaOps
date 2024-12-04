@@ -9,6 +9,10 @@ function makeEditable(datatableApi) {
         }
     });
 
+    $(".fa-filter").click(function () {
+        filterTable($(this));
+    })
+
     $(document).ajaxError(function (event, jqXHR, options, jsExc) {
         failNoty(jqXHR);
     });

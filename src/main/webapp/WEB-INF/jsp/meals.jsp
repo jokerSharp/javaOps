@@ -13,6 +13,34 @@
 <div class="jumbotron pt-4">
     <div class="container">
         <h3 class="text-center"><spring:message code="meal.title"/></h3>
+        <form id="filter">
+            <div class="col-2">
+                <label for="startDate"><spring:message code="meal.startDate"/>:</label>
+                <input class="form-control" type="date" name="startDate" id="startDate" value="${param.startDate}">
+            </div>
+            <div class="col-2">
+                <label for="endDate"><spring:message code="meal.endDate"/>:</label>
+                <input class="form-control" type="date" name="endDate" id="endDate" value="${param.endDate}">
+            </div>
+            <div class="col-3">
+                <label for="startTime"><spring:message code="meal.startTime"/>:</label>
+                <input class="form-control" type="time" name="startTime" id="startTime" value="${param.startTime}">
+            </div>
+            <div class="col-3">
+                <label for="endTime"><spring:message code="meal.endTime"/>:</label>
+                <input class="form-control" type="time" name="endTime" id="endTime" value="${param.endTime}">
+            </div>
+        </form>
+        <button class="btn btn-danger" onclick="updateTable()">
+            <span class="fa fa-remove"></span>
+            <spring:message code="common.cancel"/>
+        </button>
+        <button class="btn btn-primary" onclick="filterTable()">
+            <span class="fa fa-filter"></span>
+            <spring:message code="meal.filter"/>
+        </button>
+        <br>
+
         <button class="btn btn-primary" onclick="add()">
             <span class="fa fa-plus"></span>
             <spring:message code="common.add"/>

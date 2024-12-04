@@ -12,6 +12,9 @@ import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
 
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalDate;
+import static ru.javawebinar.topjava.util.DateTimeUtil.parseLocalTime;
+
 @RestController
 @RequestMapping(value = "/admin/meals", produces = MediaType.APPLICATION_JSON_VALUE)
 public class MealUIController extends AbstractMealController {
@@ -37,12 +40,15 @@ public class MealUIController extends AbstractMealController {
         super.create(new Meal(LocalDateTime.parse(dateTime), description, calories));
     }
 
-    @Override
     @GetMapping("/filter")
-    public List<MealTo> getBetween(@RequestParam @Nullable LocalDate startDate,
-                                   @RequestParam @Nullable LocalTime startTime,
-                                   @RequestParam @Nullable LocalDate endDate,
-                                   @RequestParam @Nullable LocalTime endTime) {
-        return super.getBetween(startDate, startTime, endDate, endTime);
+    public List<MealTo> getBetween(@RequestParam @Nullable String startDate,
+                                   @RequestParam @Nullable String startTime,
+                                   @RequestParam @Nullable String endDate,
+                                   @RequestParam @Nullable String endTime) {
+        LocalDate parsedStartDate = parseLocalDate(startDate);
+        LocalDate parsedEndDate = parseLocalDate(endDate);
+        LocalTime parsedStartTime = parseLocalTime(startTime);
+        LocalTime parsedEndTime = parseLocalTime(endTime);
+        return super.getBetween(parsedStartDate, parsedStartTime, parsedEndDate, parsedEndTime);
     }
 }
