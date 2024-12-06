@@ -39,12 +39,13 @@ public class DateTimeFormatters {
 
         @Override
         public LocalDateTime parse(String text, Locale locale) {
-            return LocalDateTime.parse(text);
+            String[] strings = text.split(" ");
+            return LocalDateTime.of(LocalDate.parse(strings[0]), LocalTime.parse(strings[1]));
         }
 
         @Override
         public String print(LocalDateTime ldt, Locale locale) {
-            return ldt.format(DateTimeFormatter.ISO_LOCAL_DATE_TIME);
+            return ldt.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm"));
         }
     }
 }
