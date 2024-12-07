@@ -115,41 +115,9 @@
     const i18n = {}; // https://learn.javascript.ru/object
     i18n["addTitle"] = '<spring:message code="meal.add"/>';
     i18n["editTitle"] = '<spring:message code="meal.edit"/>';
-
-    <c:forEach var="key" items='${["common.deleted","common.saved","common.enabled","common.disabled","common.errorStatus","common.confirm"]}'>
-    i18n["${key}"] = "<spring:message code="${key}"/>";
-    </c:forEach>
+    <jsp:include page="fragments/commonI18n.jsp"/>
 </script>
-
 <link rel="stylesheet" type="text/css" href="webjars/datetimepicker/2.5.20-1/build/jquery.datetimepicker.min.css"/>
-<script src="webjars/jquery/3.7.1/jquery.min.js"></script>
-<script src="webjars/datetimepicker/2.5.20-1/build/jquery.datetimepicker.full.min.js"></script>
-
-<script>
-    jQuery('#dateTime').datetimepicker({format: "Y-m-d H:m"});
-</script>
-<script>
-    jQuery('#startDate').datetimepicker({
-        timepicker:false,
-        format: "Y-m-d"
-    });
-</script>
-<script>
-    jQuery('#endDate').datetimepicker({
-        timepicker:false,
-        format: "Y-m-d"
-    });
-</script>
-<script>
-    jQuery('#startTime').datetimepicker({
-        datepicker:false,
-        format: "H:m"
-    });
-</script>
-<script>
-    jQuery('#endTime').datetimepicker({
-        datepicker:false,
-        format: "H:m"
-    });
-</script>
+<script src="webjars/datetimepicker/2.5.20-1/build/jquery.datetimepicker.full.min.js" defer></script>
+<script type="text/javascript" src="resources/js/topjava.datetimepicker-config.js" defer></script>
 </html>

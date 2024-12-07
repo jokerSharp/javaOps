@@ -59,7 +59,7 @@ $(function () {
                     "desc"
                 ]
             ],
-            "createdRow": function(row, data, index) {
+            "createdRow": function (row, data, index) {
                 $(row).attr('data-meal-excess', data.excess);
             }
         })

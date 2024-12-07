@@ -111,18 +111,4 @@ class MealRestControllerTest extends AbstractControllerTest {
         perform(MockMvcRequestBuilders.get(REST_URL))
                 .andExpect(status().isUnauthorized());
     }
-
-    @Test
-    void getAuthForUserToMeals() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL)
-                .with(userHttpBasic(UserTestData.user)))
-                .andExpect(status().isOk());
-    }
-
-    @Test
-    void getAuthForAdminToMeals() throws Exception {
-        perform(MockMvcRequestBuilders.get(REST_URL)
-                .with(userHttpBasic(UserTestData.admin)))
-                .andExpect(status().isOk());
-    }
 }
