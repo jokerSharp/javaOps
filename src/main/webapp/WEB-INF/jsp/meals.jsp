@@ -111,12 +111,10 @@
 </div>
 <jsp:include page="fragments/footer.jsp"/>
 </body>
-<script type="text/javascript">
-    const i18n = {}; // https://learn.javascript.ru/object
-    i18n["addTitle"] = '<spring:message code="meal.add"/>';
-    i18n["editTitle"] = '<spring:message code="meal.edit"/>';
-    <jsp:include page="fragments/commonI18n.jsp"/>
-</script>
+<jsp:include page="fragments/commonI18n.jsp">
+    <jsp:param name="addTitle" value="meal.add"/>
+    <jsp:param name="editTitle" value="meal.edit"/>
+</jsp:include>
 <link rel="stylesheet" type="text/css" href="webjars/datetimepicker/2.5.20-1/build/jquery.datetimepicker.min.css"/>
 <script src="webjars/datetimepicker/2.5.20-1/build/jquery.datetimepicker.full.min.js" defer></script>
 <script type="text/javascript" src="resources/js/topjava.datetimepicker-config.js" defer></script>
