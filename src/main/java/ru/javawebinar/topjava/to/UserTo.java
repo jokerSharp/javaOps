@@ -2,6 +2,7 @@ package ru.javawebinar.topjava.to;
 
 import org.hibernate.validator.constraints.Range;
 import ru.javawebinar.topjava.util.UsersUtil;
+import ru.javawebinar.topjava.web.user.validation.UniqueEmail;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -21,6 +22,7 @@ public class UserTo extends BaseTo implements Serializable {
     @Email
     @NotBlank
     @Size(max = 100)
+    @UniqueEmail
     private String email;
 
     @NotBlank

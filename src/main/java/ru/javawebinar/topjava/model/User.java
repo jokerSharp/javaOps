@@ -6,6 +6,7 @@ import org.hibernate.annotations.Cache;
 import org.hibernate.annotations.*;
 import org.hibernate.validator.constraints.Range;
 import org.springframework.util.CollectionUtils;
+import ru.javawebinar.topjava.web.user.validation.UniqueEmail;
 
 import javax.persistence.Entity;
 import javax.persistence.NamedQueries;
@@ -39,6 +40,7 @@ public class User extends AbstractNamedEntity {
     @Email
     @NotBlank
     @Size(max = 128)
+    @UniqueEmail
     private String email;
 
     @Column(name = "password", nullable = false)
