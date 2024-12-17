@@ -20,12 +20,18 @@ import ru.javawebinar.topjava.util.exception.NotFoundException;
 
 import javax.servlet.http.HttpServletRequest;
 
+import java.util.Map;
+
 import static ru.javawebinar.topjava.util.exception.ErrorType.*;
+import static ru.javawebinar.topjava.web.user.UniqueMailValidator.EXCEPTION_DUPLICATE_EMAIL;
 
 @RestControllerAdvice(annotations = RestController.class)
 @Order(Ordered.HIGHEST_PRECEDENCE + 5)
 public class ExceptionInfoHandler {
     private static final Logger log = LoggerFactory.getLogger(ExceptionInfoHandler.class);
+
+    private static final Map<String, String> CONSTRAINS_I18N_MAP = Map.of(
+            "users_unique_email_idx", EXCEPTION_DUPLICATE_EMAIL);
 
     //  http://stackoverflow.com/a/22358422/548473
     @ResponseStatus(HttpStatus.UNPROCESSABLE_ENTITY)
@@ -37,6 +43,15 @@ public class ExceptionInfoHandler {
     @ResponseStatus(HttpStatus.CONFLICT)  // 409
     @ExceptionHandler(DataIntegrityViolationException.class)
     public ErrorInfo conflict(HttpServletRequest req, DataIntegrityViolationException e) {
+        String rootMsg = ValidationUtil.getRootCause(e).getMessage();
+        if (rootMsg != null) {
+            String lowerCaseMsg = rootMsg.toLowerCase();
+            for (Map.Entry<String, String> entry : CONSTRAINS_I18N_MAP.entrySet()) {
+                if (lowerCaseMsg.contains(entry.getKey())) {
+                    return logAndGetErrorInfo(req, e, true, VALIDATION_ERROR);
+                }
+            }
+        }
         return logAndGetErrorInfo(req, e, true, DATA_ERROR);
     }
 

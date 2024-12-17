@@ -30,8 +30,8 @@ public class UniqueMailValidator implements org.springframework.validation.Valid
         HasIdAndEmail user = ((HasIdAndEmail) target);
         Optional<User> extracted = Optional.ofNullable(repository.getByEmail(user.getEmail()));
         if (extracted.isPresent()
-                && user.getId() != null
-                && !extracted.get().getId().equals(user.getId())) {
+                && !extracted.get().getId().equals(user.getId())
+        ) { if (user.getId() != null)
             errors.rejectValue("email", "", EXCEPTION_DUPLICATE_EMAIL);
         }
     }
