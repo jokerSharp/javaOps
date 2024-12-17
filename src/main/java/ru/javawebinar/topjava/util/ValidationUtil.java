@@ -80,7 +80,7 @@ public class ValidationUtil {
 
     public static void getErrorResponse(BindingResult result) {
         if (result.hasErrors()) {
-            throw new NotFoundException(
+            throw new IllegalRequestDataException(
                     result.getFieldErrors().stream()
                             .map(fe -> String.format("[%s] %s", fe.getField(), fe.getDefaultMessage()))
                             .collect(Collectors.joining("<br>"))
