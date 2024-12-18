@@ -66,7 +66,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void registerInvalidData() throws Exception {
-        UserTo newTo = new UserTo(null, "", "newemail@ya.ru", "newPassword", 1500);
+        UserTo newTo = new UserTo(null, "", "newemail@ya.ru", "", 1500);
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .content(JsonUtil.writeValue(newTo)))
@@ -88,7 +88,7 @@ class ProfileRestControllerTest extends AbstractControllerTest {
 
     @Test
     void updateInvalidData() throws Exception {
-        UserTo updatedTo = new UserTo(null, "newName", "user@yandex.ru", "", 1500);
+        UserTo updatedTo = new UserTo(null, "", "user@yandex.ru", "", 1500);
         perform(MockMvcRequestBuilders.put(REST_URL).contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(user))
                 .content(JsonUtil.writeValue(updatedTo)))

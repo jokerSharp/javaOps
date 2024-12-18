@@ -35,8 +35,7 @@ public class AdminUIController extends AbstractUserController {
     }
 
     @PostMapping
-    public void createOrUpdate(@Valid UserTo userTo, BindingResult result) {
-        ValidationUtil.getErrorResponse(result);
+    public void createOrUpdate(@Valid UserTo userTo) {
         if (userTo.isNew()) {
             super.create(userTo);
         } else {

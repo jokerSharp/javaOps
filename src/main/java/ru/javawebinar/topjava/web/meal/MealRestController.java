@@ -43,14 +43,12 @@ public class MealRestController extends AbstractMealController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody Meal meal, BindingResult result, @PathVariable int id) {
-        ValidationUtil.getErrorResponse(result);
+    public void update(@Valid @RequestBody Meal meal, @PathVariable int id) {
         super.update(meal, id);
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<Meal> createWithLocation(@Valid @RequestBody Meal meal, BindingResult result) {
-        ValidationUtil.getErrorResponse(result);
+    public ResponseEntity<Meal> createWithLocation(@Valid @RequestBody Meal meal) {
         Meal created = super.create(meal);
 
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()

@@ -33,8 +33,7 @@ public class ProfileRestController extends AbstractUserController {
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo, BindingResult result) {
-        ValidationUtil.getErrorResponse(result);
+    public ResponseEntity<User> register(@Valid @RequestBody UserTo userTo) {
         User created = super.create(userTo);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL).build().toUri();
@@ -43,8 +42,7 @@ public class ProfileRestController extends AbstractUserController {
 
     @PutMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody UserTo userTo, BindingResult result) {
-        ValidationUtil.getErrorResponse(result);
+    public void update(@Valid @RequestBody UserTo userTo) {
         super.update(userTo, authUserId());
     }
 

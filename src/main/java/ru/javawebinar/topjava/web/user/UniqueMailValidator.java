@@ -6,7 +6,9 @@ import org.springframework.validation.Errors;
 import ru.javawebinar.topjava.HasIdAndEmail;
 import ru.javawebinar.topjava.model.User;
 import ru.javawebinar.topjava.repository.UserRepository;
+import ru.javawebinar.topjava.web.SecurityUtil;
 
+import javax.servlet.http.HttpServletRequest;
 import java.util.Optional;
 
 @Component
@@ -16,8 +18,11 @@ public class UniqueMailValidator implements org.springframework.validation.Valid
 
     private final UserRepository repository;
 
-    public UniqueMailValidator(UserRepository repository) {
+    private final HttpServletRequest request;
+
+    public UniqueMailValidator(UserRepository repository, HttpServletRequest request) {
         this.repository = repository;
+        this.request = request;
     }
 
     @Override
@@ -29,9 +34,20 @@ public class UniqueMailValidator implements org.springframework.validation.Valid
     public void validate(@NonNull Object target, @NonNull Errors errors) {
         HasIdAndEmail user = ((HasIdAndEmail) target);
         Optional<User> extracted = Optional.ofNullable(repository.getByEmail(user.getEmail()));
-        if (extracted.isPresent()
-                && !extracted.get().getId().equals(user.getId())
-        ) { if (user.getId() != null)
+        if (extracted.isPresent()) {
+            int dbId = extracted.get().getId();
+            if (user.getId() != null && extracted.get().getId().equals(user.getId())) {
+                return;
+            }
+            String requestURI = request.getRequestURI();
+            if (requestURI.endsWith("/register") && !request.getParameter("email").equals(user.getEmail())) {
+                return;
+            }
+            if (SecurityUtil.safeGet() != null) {
+                if (dbId == SecurityUtil.authUserId() && requestURI.endsWith("/profile")) {
+                    return;
+                }
+            }
             errors.rejectValue("email", "", EXCEPTION_DUPLICATE_EMAIL);
         }
     }

@@ -100,6 +100,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
     void updateInvalidData() throws Exception {
         User updated = getUpdated();
         updated.setEmail("");
+        updated.setPassword("123");
         perform(MockMvcRequestBuilders.put(REST_URL + USER_ID)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))
@@ -127,6 +128,7 @@ class AdminRestControllerTest extends AbstractControllerTest {
     void createInvalidData() throws Exception {
         User newUser = getNew();
         newUser.setName("");
+        newUser.setPassword("123");
         perform(MockMvcRequestBuilders.post(REST_URL)
                 .contentType(MediaType.APPLICATION_JSON)
                 .with(userHttpBasic(admin))

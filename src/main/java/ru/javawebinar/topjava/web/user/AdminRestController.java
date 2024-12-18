@@ -32,8 +32,7 @@ public class AdminRestController extends AbstractUserController {
     }
 
     @PostMapping(consumes = MediaType.APPLICATION_JSON_VALUE)
-    public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user, BindingResult result) {
-        ValidationUtil.getErrorResponse(result);
+    public ResponseEntity<User> createWithLocation(@Valid @RequestBody User user) {
         User created = super.create(user);
         URI uriOfNewResource = ServletUriComponentsBuilder.fromCurrentContextPath()
                 .path(REST_URL + "/{id}")
@@ -50,8 +49,7 @@ public class AdminRestController extends AbstractUserController {
 
     @PutMapping(value = "/{id}", consumes = MediaType.APPLICATION_JSON_VALUE)
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void update(@Valid @RequestBody User user, BindingResult result, @PathVariable int id) {
-        ValidationUtil.getErrorResponse(result);
+    public void update(@Valid @RequestBody User user, @PathVariable int id) {
         super.update(user, id);
     }
 
